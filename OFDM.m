@@ -1,61 +1,60 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  ¶ÔOFDMÏµÍ³½øÐÐ·ÂÕæ£¬µÃµ½Îó±ÈÌØÂÊÇúÏß                                                          %%
-%  ²ÉÓÃBPSK½øÐÐµ÷ÖÆ£¬ÏµÍ³¶Ô128¸öBPSKµ÷ÖÆ·ûºÅ½øÐÐIFFTÔËËã                                         %%
-%  IFFTÔËËã½á¹û¹¹³ÉÒ»¸öOFDM·ûºÅÏµÍ³¶Ô128¸öBPSKµ÷ÖÆ·ûºÅ½øÐÐIFFTÔËËã£¬IFFTÔËËã½á¹û¹¹³ÉÒ»¸öOFDM·ûºÅ   %%
-%  ÊÕ·¢¶Ë£ºFIRÂË²¨Æ÷£¬µÈ²¨ÎÆÂË²¨Æ÷                                                              %%
-%  ÐÅµÀ£ºAWGNÐÅµÀ                                                                              %%
+%  å¯¹OFDMç³»ç»Ÿè¿›è¡Œä»¿çœŸï¼Œå¾—åˆ°è¯¯æ¯”ç‰¹çŽ‡æ›²çº¿                                                          %%
+%  é‡‡ç”¨BPSKè¿›è¡Œè°ƒåˆ¶ï¼Œç³»ç»Ÿå¯¹128ä¸ªBPSKè°ƒåˆ¶ç¬¦å·è¿›è¡ŒIFFTè¿ç®—                                         %%
+%  IFFTè¿ç®—ç»“æžœæž„æˆä¸€ä¸ªOFDMç¬¦å·ç³»ç»Ÿå¯¹128ä¸ªBPSKè°ƒåˆ¶ç¬¦å·è¿›è¡ŒIFFTè¿ç®—ï¼ŒIFFTè¿ç®—ç»“æžœæž„æˆä¸€ä¸ªOFDMç¬¦å·   %%
+%  æ”¶å‘ç«¯ï¼šFIRæ»¤æ³¢å™¨ï¼Œç­‰æ³¢çº¹æ»¤æ³¢å™¨                                                              %%
+%  ä¿¡é“ï¼šAWGNä¿¡é“                                                                              %%
 %                                                                                             %%
-%                                             ÑîÓî†´                                           %%
-%                                           1400012996                                        %%
+%                                           Yuzhe Yang                                        %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all
 
-%---------------------------------------- ÏµÍ³²ÎÊý¶¨Òå ----------------------------------------%
-nFFT = 128;             % nµãfftµÄ³¤¶È
-nBpsk_Ofdm = 128;       % Ã¿¸öOFDM·ûºÅ´øÓÐµÄBPSK·ûºÅ
-nBit_Sym = 128;         % Ã¿¸öOFDM·ûºÅËù´øµÄbitÊýÄ¿£¨¶ÔÓÚBPSK¶øÑÔºÍ nBpsk_Ofdm Ò»Ñù£©
-nSym = 10^4;            % OFDM ·ûºÅÊýÄ¿£¨bit number > 10^5£¬¼´symbol > 10^3£¬´Ë´¦È¡10^4±£Ö¤ÊýÄ¿¾«È·¶È£©
+%---------------------------------------- ç³»ç»Ÿå‚æ•°å®šä¹‰ ----------------------------------------%
+nFFT = 128;             % nç‚¹fftçš„é•¿åº¦
+nBpsk_Ofdm = 128;       % æ¯ä¸ªOFDMç¬¦å·å¸¦æœ‰çš„BPSKç¬¦å·
+nBit_Sym = 128;         % æ¯ä¸ªOFDMç¬¦å·æ‰€å¸¦çš„bitæ•°ç›®ï¼ˆå¯¹äºŽBPSKè€Œè¨€å’Œ nBpsk_Ofdm ä¸€æ ·ï¼‰
+nSym = 10^4;            % OFDM ç¬¦å·æ•°ç›®ï¼ˆbit number > 10^5ï¼Œå³symbol > 10^3ï¼Œæ­¤å¤„å–10^4ä¿è¯æ•°ç›®ç²¾ç¡®åº¦ï¼‰
 
 EbN0dB = 0:0.5:12;      % Bit to Noise Ratio
-EsN0dB = EbN0dB + 10*log10(nBpsk_Ofdm/nFFT) - 10*log10(8);         % ×ª»»ÎªÃ¿¸ösymbolµÄSNR, Nsample = 8
+EsN0dB = EbN0dB + 10*log10(nBpsk_Ofdm/nFFT) - 10*log10(8);         % è½¬æ¢ä¸ºæ¯ä¸ªsymbolçš„SNR, Nsample = 8
 
 
-%---------------------------------------- ÂË²¨Æ÷Éè¼Æ ¼° Æä·ùÏàÆµÏìÓ¦ ----------------------------------------%
+%---------------------------------------- æ»¤æ³¢å™¨è®¾è®¡ åŠ å…¶å¹…ç›¸é¢‘å“åº” ----------------------------------------%
 [n,f,a,w] = firpmord([3.5*10^6 4.5*10^6], [1, 0], [0.005, 0.001], 24*10^6);
-Hd = firpm(n,f,a,w);                        % Éè¼ÆÂË²¨Æ÷µÄÏµÊý
-disp(Hd)                                    % FIRÏµÍ³º¯ÊýÁãµãµÄÏÔÊ¾
+Hd = firpm(n,f,a,w);                        % è®¾è®¡æ»¤æ³¢å™¨çš„ç³»æ•°
+disp(Hd)                                    % FIRç³»ç»Ÿå‡½æ•°é›¶ç‚¹çš„æ˜¾ç¤º
 
-freqz(Hd, 1, 'whole');                      % ÂË²¨Æ÷·ùÆµ\ÏàÆµÏìÓ¦
+freqz(Hd, 1, 'whole');                      % æ»¤æ³¢å™¨å¹…é¢‘\ç›¸é¢‘å“åº”
 figure
-zplane(Hd, 1); axis([-1.1,1.1,-1.1,1.1]); title('Áã¼«µãÍ¼');        % ÂË²¨Æ÷µÄÁã¼«µãÍ¼
-grpdelay(Hd);  title('ÈºÑÓ³ÙÍ¼');                                   % ÂË²¨Æ÷µÄÈºÑÓ³Ù
-stem(Hd); title('ÂË²¨Æ÷Ê±ÓòÏìÓ¦/³å¼¤ÏìÓ¦');                          % ÂË²¨Æ÷Ê±ÓòÏìÓ¦
+zplane(Hd, 1); axis([-1.1,1.1,-1.1,1.1]); title('é›¶æžç‚¹å›¾');        % æ»¤æ³¢å™¨çš„é›¶æžç‚¹å›¾
+grpdelay(Hd);  title('ç¾¤å»¶è¿Ÿå›¾');                                   % æ»¤æ³¢å™¨çš„ç¾¤å»¶è¿Ÿ
+stem(Hd); title('æ»¤æ³¢å™¨æ—¶åŸŸå“åº”/å†²æ¿€å“åº”');                          % æ»¤æ³¢å™¨æ—¶åŸŸå“åº”
 
-%---------------------------------------- OFDM ÏµÍ³Îó±ÈÌØÂÊ·ÂÕæ ----------------------------------------%
+%---------------------------------------- OFDM ç³»ç»Ÿè¯¯æ¯”ç‰¹çŽ‡ä»¿çœŸ ----------------------------------------%
 for ii = 1:length(EbN0dB)
 
-    % ·¢Éä¶Ë
-    s_bit = round(rand(1,nBit_Sym*nSym));               % Ëæ»ú0, 1±ÈÌØÐòÁÐ
-    s_bit_bpsk = 2*s_bit - 1;                           % BPSKµ÷ÖÆ£º 0 --> -1, 1 --> +1
-    s_bit_bpsk = reshape(s_bit_bpsk,nBit_Sym,nSym).';   % ½«µ÷ÖÆºóÐÅºÅÖØÐÂ·Ö×éÎª nSym*nBit_Sym ¾ØÕó£¬±ãÓÚ²Ù×÷
+    % å‘å°„ç«¯
+    s_bit = round(rand(1,nBit_Sym*nSym));               % éšæœº0, 1æ¯”ç‰¹åºåˆ—
+    s_bit_bpsk = 2*s_bit - 1;                           % BPSKè°ƒåˆ¶ï¼š 0 --> -1, 1 --> +1
+    s_bit_bpsk = reshape(s_bit_bpsk,nBit_Sym,nSym).';   % å°†è°ƒåˆ¶åŽä¿¡å·é‡æ–°åˆ†ç»„ä¸º nSym*nBit_Sym çŸ©é˜µï¼Œä¾¿äºŽæ“ä½œ
     % disp(s_bit_bpsk(1:10));
   
-    % IFFT±ä»» ÊµÏÖOFDMÃ¿¸ö·ûºÅ
-    % (nFFT/sqrt(nBpsk_Ofdm))ÊÇ½«Ã¿¸ö·¢ËÍ·ûºÅµÄÄÜÁ¿¹éÒ»»¯µ½1
-    s_ofdm = (nFFT/sqrt(nBpsk_Ofdm))*ifft(fftshift(s_bit_bpsk.')).';    % ifftÇ°ÐèÒªfftshiftµ½ÖÐÐÄ£¬ÇÒÓÉÓÚÎª¾ØÕóµÄshift£¬ÐèÒª×÷×ªÖÃ
+    % IFFTå˜æ¢ å®žçŽ°OFDMæ¯ä¸ªç¬¦å·
+    % (nFFT/sqrt(nBpsk_Ofdm))æ˜¯å°†æ¯ä¸ªå‘é€ç¬¦å·çš„èƒ½é‡å½’ä¸€åŒ–åˆ°1
+    s_ofdm = (nFFT/sqrt(nBpsk_Ofdm))*ifft(fftshift(s_bit_bpsk.')).';    % ifftå‰éœ€è¦fftshiftåˆ°ä¸­å¿ƒï¼Œä¸”ç”±äºŽä¸ºçŸ©é˜µçš„shiftï¼Œéœ€è¦ä½œè½¬ç½®
 
-    % ²åÈëÑ­»·Ç°×ºCP£¬Éè¶¨Æä³¤¶ÈÎª L=16
+    % æ’å…¥å¾ªçŽ¯å‰ç¼€CPï¼Œè®¾å®šå…¶é•¿åº¦ä¸º L=16
     s_cp = [s_ofdm(:,113:128) s_ofdm];
 
-    % ½«¶à¸öOFDM·ûºÅ´®Áªµ½Ò»¸öÒ»Î¬ÏòÁ¿
+    % å°†å¤šä¸ªOFDMç¬¦å·ä¸²è”åˆ°ä¸€ä¸ªä¸€ç»´å‘é‡
     s_cp = reshape(s_cp.',1,nSym*(16+128));
     
-    % ½«Êµ²¿ÓëÐé²¿ÐÅºÅ·Ö±ð´¦Àí
+    % å°†å®žéƒ¨ä¸Žè™šéƒ¨ä¿¡å·åˆ†åˆ«å¤„ç†
     s_I = real(s_cp);
     s_Q = imag(s_cp);
     
-    % 8±¶ÉÏ²ÉÑù
+    % 8å€ä¸Šé‡‡æ ·
     s_Iup = upsample(s_I,8);
     s_Qup = upsample(s_Q,8);
     
@@ -63,11 +62,11 @@ for ii = 1:length(EbN0dB)
     s_Qup = reshape(s_Qup, 8*(nBit_Sym+16), nSym).';
     
     %{
-    % ¾­¹ý·¢Éä¶ËµÍÍ¨ÂË²¨Æ÷
+    % ç»è¿‡å‘å°„ç«¯ä½Žé€šæ»¤æ³¢å™¨
     s_I_filter = zeros(nSym,144*8);
     s_Q_filter = zeros(nSym,144*8);
     for j = 1:nSym
-        s_I_filter(j,:) = filter(Hd,1,s_Iup(j,:));      % ¾í»ý, conv()º¯ÊýÓÐÎÊÌâ£¿£¿ÔÝÊ±ÓÃfilter
+        s_I_filter(j,:) = filter(Hd,1,s_Iup(j,:));      % å·ç§¯, conv()å‡½æ•°æœ‰é—®é¢˜ï¼Ÿï¼Ÿæš‚æ—¶ç”¨filter
         s_Q_filter(j,:) = filter(Hd,1,s_Qup(j,:));
     end
     
@@ -75,40 +74,40 @@ for ii = 1:length(EbN0dB)
     s_Q_filter = reshape(s_Q_filter.', 1, 8*nSym*(16+128));
     %}
 
-    % ¾­¹ý·¢Éä¶ËµÍÍ¨ÂË²¨Æ÷
+    % ç»è¿‡å‘å°„ç«¯ä½Žé€šæ»¤æ³¢å™¨
     % Hd = my_filter;
     s_I_filter = zeros(nSym,144*8 + n);
     s_Q_filter = zeros(nSym,144*8 + n);
     for j = 1:nSym
-        s_I_filter(j,:) = conv(s_Iup(j,:),Hd);                  % conv¾í»ý
+        s_I_filter(j,:) = conv(s_Iup(j,:),Hd);                  % convå·ç§¯
         s_Q_filter(j,:) = conv(s_Qup(j,:),Hd);
     end
     
-    % ÓÉÓÚ¾í»ýÒýÈëÁË¶àÓàÏî£¬ÐèÒªÈ¥µô£¨ÂË²¨Æ÷½×Êý = µãÊý = n£©
+    % ç”±äºŽå·ç§¯å¼•å…¥äº†å¤šä½™é¡¹ï¼Œéœ€è¦åŽ»æŽ‰ï¼ˆæ»¤æ³¢å™¨é˜¶æ•° = ç‚¹æ•° = nï¼‰
     s_I_filter = s_I_filter(:,(n/2+1):end-n/2);
     s_Q_filter = s_Q_filter(:,(n/2+1):end-n/2);
     
     s_I_filter = reshape(s_I_filter.', 1, 8*nSym*(16+128));     % reshape
     s_Q_filter = reshape(s_Q_filter.', 1, 8*nSym*(16+128));
     
-    % Á½Â·Õý½»ÐÅºÅ¾­¹ýLPFºóºÏ²¢
+    % ä¸¤è·¯æ­£äº¤ä¿¡å·ç»è¿‡LPFåŽåˆå¹¶
     s_filter = s_I_filter + 1j*s_Q_filter;
     
-    % Í¨¹ýAWGNÐÅµÀ
+    % é€šè¿‡AWGNä¿¡é“
     s_awgn = awgn(s_filter, EsN0dB(ii), 'measured');
     
-    % ½ÓÊÕ¶Ë½«Êµ²¿ÓëÐé²¿ÐÅºÅ·Ö±ð´¦Àí
+    % æŽ¥æ”¶ç«¯å°†å®žéƒ¨ä¸Žè™šéƒ¨ä¿¡å·åˆ†åˆ«å¤„ç†
     r_I = real(s_awgn);
     r_Q = imag(s_awgn);
     
     r_I = reshape(r_I, 8*(nBit_Sym+16), nSym).';        % reshape
     r_Q = reshape(r_Q, 8*(nBit_Sym+16), nSym).';
     %{
-    % ¾­¹ý½ÓÊÕ¶ËµÍÍ¨ÂË²¨Æ÷
+    % ç»è¿‡æŽ¥æ”¶ç«¯ä½Žé€šæ»¤æ³¢å™¨
     r_I_filter = zeros(nSym,144*8);
     r_Q_filter = zeros(nSym,144*8);
     for j = 1:nSym
-        r_I_filter(j,:) = filter(Hd,1,r_I(j,:));      % ¾í»ý
+        r_I_filter(j,:) = filter(Hd,1,r_I(j,:));      % å·ç§¯
         r_Q_filter(j,:) = filter(Hd,1,r_Q(j,:));
     end
     
@@ -116,58 +115,58 @@ for ii = 1:length(EbN0dB)
     r_Q_filter = reshape(r_Q_filter.', 1, 8*nSym*(16+128));
     %}
     
-    % ¾­¹ý½ÓÊÕ¶ËµÍÍ¨ÂË²¨Æ÷
+    % ç»è¿‡æŽ¥æ”¶ç«¯ä½Žé€šæ»¤æ³¢å™¨
     r_I_filter = zeros(nSym,144*8 + n);
     r_Q_filter = zeros(nSym,144*8 + n);
     for j = 1:nSym
-        r_I_filter(j,:) = conv(r_I(j,:),Hd);            % conv¾í»ý
+        r_I_filter(j,:) = conv(r_I(j,:),Hd);            % convå·ç§¯
         r_Q_filter(j,:) = conv(r_Q(j,:),Hd);
     end
     
-    % ÓÉÓÚ¾í»ýÒýÈëÁË¶àÓàÏî£¬ÐèÒªÈ¥µô£¨ÂË²¨Æ÷½×Êý = µãÊý = n£©
+    % ç”±äºŽå·ç§¯å¼•å…¥äº†å¤šä½™é¡¹ï¼Œéœ€è¦åŽ»æŽ‰ï¼ˆæ»¤æ³¢å™¨é˜¶æ•° = ç‚¹æ•° = nï¼‰
     r_I_filter = r_I_filter(:,(n/2+1):end-n/2);
     r_Q_filter = r_Q_filter(:,(n/2+1):end-n/2);
     
     r_I_filter = reshape(r_I_filter.', 1, 8*nSym*(16+128));     % reshape
     r_Q_filter = reshape(r_Q_filter.', 1, 8*nSym*(16+128));
     
-    % 8±¶ÏÂ²ÉÑù
+    % 8å€ä¸‹é‡‡æ ·
     r_Idown = downsample(r_I_filter,8);
     r_Qdown = downsample(r_Q_filter,8);
     
-    % Á½Â·Õý½»ÐÅºÅºÏ²¢
+    % ä¸¤è·¯æ­£äº¤ä¿¡å·åˆå¹¶
     r_filter = r_Idown + 1j*r_Qdown;
     
-    r_cp = reshape(r_filter,144,nSym).';        % ½«µ÷ÖÆºóÐÅºÅÖØÐÂ·Ö×éÎª nSym*(nBit_Sym+L) ¾ØÕó£¬±ãÓÚ²Ù×÷
+    r_cp = reshape(r_filter,144,nSym).';        % å°†è°ƒåˆ¶åŽä¿¡å·é‡æ–°åˆ†ç»„ä¸º nSym*(nBit_Sym+L) çŸ©é˜µï¼Œä¾¿äºŽæ“ä½œ
     
-    % ¶ªÆúÑ­»·Ç°×ºCP£¬L=16
+    % ä¸¢å¼ƒå¾ªçŽ¯å‰ç¼€CPï¼ŒL=16
     r_fft = r_cp(:,17:end);
     
-    % ×ª»»µ½ÆµÓò£¬ÀûÓÃFFT½«OFDM·ûºÅ×ª»»Îª´ý½âµ÷µÄÐÅÏ¢·ûºÅ
+    % è½¬æ¢åˆ°é¢‘åŸŸï¼Œåˆ©ç”¨FFTå°†OFDMç¬¦å·è½¬æ¢ä¸ºå¾…è§£è°ƒçš„ä¿¡æ¯ç¬¦å·
     r_F = (sqrt(nBpsk_Ofdm)/nFFT)*fftshift(fft(r_fft.')).';
 
-    % BPSK ½âµ÷
-    % ½« +value --> 1, ½« -value --> -1
+    % BPSK è§£è°ƒ
+    % å°† +value --> 1, å°† -value --> -1
     r_demod = real(r_F);
     r_demod(find(r_demod > 0)) = +1;
     r_demod(find(r_demod < 0)) = -1;
 
-    % ½«½âµ÷ºóµÄÐÅÏ¢·ûºÅ×ª»»Îª±ÈÌØÐÎÊ½
+    % å°†è§£è°ƒåŽçš„ä¿¡æ¯ç¬¦å·è½¬æ¢ä¸ºæ¯”ç‰¹å½¢å¼
     r_bit = (r_demod + 1)/2;
     r_bit = reshape(r_bit.',nBit_Sym*nSym,1).';
 
-    % ¼ÆËã´íÎóbitsÊýÄ¿
+    % è®¡ç®—é”™è¯¯bitsæ•°ç›®
     nErr(ii) = size(find(r_bit - s_bit),2);
         
 end
 
-simBer = nErr/(nSym*nBit_Sym);                          % ·ÂÕæÎó±ÈÌØÂÊ
-theoryBer = (1/2)*erfc(sqrt(10.^(EbN0dB/10)));          % ÀíÂÛÎó±ÈÌØÂÊ BPSK
+simBer = nErr/(nSym*nBit_Sym);                          % ä»¿çœŸè¯¯æ¯”ç‰¹çŽ‡
+theoryBer = (1/2)*erfc(sqrt(10.^(EbN0dB/10)));          % ç†è®ºè¯¯æ¯”ç‰¹çŽ‡ BPSK
 
 figure
-semilogy(EbN0dB,simBer,'--*r','LineWidth',2);           % ·ÂÕæÎó±ÈÌØÂÊ
+semilogy(EbN0dB,simBer,'--*r','LineWidth',2);           % ä»¿çœŸè¯¯æ¯”ç‰¹çŽ‡
 hold on
-semilogy(EbN0dB,theoryBer,'--*b','LineWidth',2);        % ÀíÂÛÎó±ÈÌØÂÊ BPSK
+semilogy(EbN0dB,theoryBer,'--*b','LineWidth',2);        % ç†è®ºè¯¯æ¯”ç‰¹çŽ‡ BPSK
 % axis([0 10 10^-5 1])
 grid on
 legend('simulation', 'theory');
